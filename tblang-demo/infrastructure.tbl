@@ -1,0 +1,77 @@
+// TBLang Infrastructure Configuration
+// This file defines AWS infrastructure using TBLang
+
+cloud_vendor "aws" {
+    region = "us-east-1"
+    profile = "kyaw-zin"  // Specify your AWS profile here
+}
+
+// VPC Configuration
+declare vpc_config = {
+    cidr_block: "10.0.0.0/16"
+    enable_dns_hostnames: true
+    enable_dns_support: true
+    tags: {
+        Name: "production-vpc"
+        Environment: "production"
+        Project: "tblang-demo"
+        ManagedBy: "TBLang"
+    }
+}
+
+// Create the VPC
+declare main_vpc = vpc("production-vpc", vpc_config);
+
+// Public Subnet Configuration
+declare public_subnet_config = {
+    vpc_id: main_vpc
+    cidr_block: "10.0.1.0/24"
+    availability_zone: "us-east-1a"
+    map_public_ip: true
+    tags: {
+        Name: "production-public-subnet-1a"
+        Environment: "production"
+        Type: "public"
+        Project: "tblang-demo"
+        ManagedBy: "TBLang"
+    }
+}
+
+// Create Public Subnet
+declare public_subnet = subnet("production-public-subnet-1a", public_subnet_config);
+
+// Private Subnet Configuration
+declare private_subnet_config = {
+    vpc_id: main_vpc
+    cidr_block: "10.0.2.0/24"
+    availability_zone: "us-east-1b"
+    map_public_ip: false
+    tags: {
+        Name: "production-private-subnet-1b"
+        Environment: "production"
+        Type: "private"
+        Project: "tblang-demo"
+        ManagedBy: "TBLang"
+    }
+}
+
+// Create Private Subnet
+declare private_subnet = subnet("production-private-subnet-1b", private_subnet_config);
+
+// Database Subnet Configuration
+declare db_subnet_config = {
+    vpc_id: main_vpc
+    cidr_block: "10.0.3.0/24"
+    availability_zone: "us-east-1c"
+    map_public_ip: false
+    tags: {
+        Name: "production-db-subnet-1c"
+        Environment: "production"
+        Type: "database"
+        Project: "tblang-demo"
+        ManagedBy: "TBLang"
+    }
+}
+
+// Create Database Subnet
+declare db_subnet = subnet("production-db-subnet-1c", db_subnet_config);
